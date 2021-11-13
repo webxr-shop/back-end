@@ -1,0 +1,19 @@
+{
+  "name": "webxr",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "dev": "nodemon src/server.js"
+  },
+  "dependencies": {
+    "express": "^4.17.1",
+    "pg": "^8.7.1",
+    "pg-hstore": "^2.3.4",
+    "sequelize": "^6.8.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.14",
+    "sequelize-cli": "^6.2.0"
+  }
+}
