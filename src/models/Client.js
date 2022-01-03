@@ -17,6 +17,10 @@ class Client extends Model {
   }
   static associate(models) {
     this.hasMany(models.Template, { foreignKey: 'client_id', as: 'templates' });
+    this.hasMany(models.Template, {
+      foreignKey: 'client_id',
+      as: 'categories',
+    });
   }
 }
 

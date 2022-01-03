@@ -1,4 +1,5 @@
 const Client = require('../models/Client');
+const md5 = require('md5');
 
 module.exports = {
   async sign(req, res) {
@@ -7,16 +8,20 @@ module.exports = {
       attributes: ['id'],
       where: { email },
     });
+
     if (!exist) {
       const new_client = await Client.create({
         name,
         last_name,
         email,
-        password,
+        password: md5(password),
       });
-      return res.json({ error: 0, id: new_client.id });
+      return res.json({
+        error: 0,
+        token: md5(new_client.id),
+      });
     }
-    return res.json({ error: 1, erro: 'Email existente' });
+    return res.json({ error: 'Email existente' });
   },
 
   async login(req, res) {
@@ -26,12 +31,50 @@ module.exports = {
       where: { email },
     });
     if (exist) {
-      if (exist.password == password) {
-        return res.json({ error: 0, id: exist.id });
+      if (exist.password == md5(password)) {
+        return res.json({ error: 0, token: md5(exist.id) });
       } else {
-        return res.json({ error: 1, erro: 'Senha incompatível' });
+        return res.json({ error: 'Senha incompatível' });
       }
     }
-    return res.json({ error: 1, erro: 'Email inexistente' });
+    return res.json({ error: 'Email inexistente' });
+  },
+  async profile(req, res) {
+    const { token } = req.body;
+    const client = await Client.findOne({
+      where: {
+        id: {
+          [md5(id)]: token,
+        },
+      },
+    });
+    if (client) {
+      return res.json({ error: 0, client });
+    }
+    return res.json({ error: 'Usuario não encontrado' });
+  },
+
+  async editProfile(req, res) {
+    const { token, name, last_name, email, password } = req.body;
+    const client = await Client.findOne({
+      where: {
+        id: {
+          [md5(id)]: token,
+        },
+      },
+    });
+    if (client) {
+      await Client.create({
+        id: client.id,
+        name,
+        last_name,
+        email,
+        password: md5(password),
+      });
+      return res.json({
+        error: 0,
+      });
+    }
+    return res.json({ error: 'Usuario não encontrado' });
   },
 };

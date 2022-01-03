@@ -6,7 +6,7 @@ class Category extends Model {
       {
         name: DataTypes.STRING,
         description: DataTypes.STRING,
-        thumb: DataTypes.STRING,
+        thumb: DataTypes.TEXT,
       },
       {
         sequelize,
@@ -15,6 +15,7 @@ class Category extends Model {
     );
   }
   static associate(models) {
+    this.belongsTo(models.Client, { foreignKey: 'client_id', as: 'client' });
     this.hasMany(models.Template, {
       foreignKey: 'category_id',
       as: 'templates',

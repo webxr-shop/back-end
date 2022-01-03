@@ -1,33 +1,58 @@
 const Template = require('../models/Template');
+const Client = require('../models/Client');
 const Category = require('../models/Category');
+const md5 = require('md5');
 
 module.exports = {
   async list(req, res) {
-    const { client_id } = req.body;
-
-    const { count, _templates } = await Template.findAndCountAll({
-      attributes: ['id', 'category_id'],
-      where: { client_id },
-    });
+    const { token } = req.body;
 
     var aux = [];
+    const clients = await Client.findAll({});
+    var client_id = 0;
 
-    for (let i = 0; i < _templates.length; i++) {
-      var _categories = await Category.findAll({
-        attributes: ['name'],
-        where: { id: _templates[i].category_id },
-      });
-
-      aux.push({
-        name: _categories.name,
-        count,
-        category_id: _templates[i].category_id,
-      });
+    for (let i = 0; i < clients.length; i++) {
+      if (md5(clients[i].id) == token) {
+        client_id = clients[i].id;
+      }
     }
+    var _categories = await Category.findAll({
+      attributes: ['id', 'name', 'thumb'],
+      where: { client_id: client_id },
+      include: [
+        {
+          attributes: ['category_id'],
+          association: 'templates',
+          group: ['category_id'],
+        },
+      ],
+    });
 
     return res.json({
       error: 0,
-      aux,
+      _categories,
+    });
+  },
+
+  async list_categories(req, res) {
+    const { token } = req.body;
+
+    const clients = await Client.findAll({});
+    var client_id = 0;
+
+    for (let i = 0; i < clients.length; i++) {
+      if (md5(clients[i].id) == token) {
+        client_id = clients[i].id;
+      }
+    }
+    var _categories = await Category.findAll({
+      attributes: ['id', 'name'],
+      where: { client_id: client_id },
+    });
+
+    return res.json({
+      error: 0,
+      _categories,
     });
   },
 
@@ -35,6 +60,7 @@ module.exports = {
     const { client_id, category_id } = req.body;
 
     const _templates = await Template.findAll({
+      attributes: ['id'],
       where: { client_id, category_id },
     });
 
@@ -42,5 +68,78 @@ module.exports = {
       error: 0,
       _templates,
     });
+  },
+
+  async getModel(req, res) {
+    const { model_id } = req.body;
+
+    const _template = await Template.findOne({
+      where: { id: model_id },
+    });
+
+    return res.json({
+      error: 0,
+      _template,
+    });
+  },
+
+  async createModel(req, res) {
+    const {
+      name_model,
+      file_model,
+      dim_x,
+      dim_y,
+      dim_z,
+      name_product,
+      descriptopm_product,
+      thumb_product,
+    } = req.body;
+
+    const new_template = await Template.create({
+      name_model,
+      file_model,
+      dim_x,
+      dim_y,
+      dim_z,
+      name_product,
+      descriptopm_product,
+      thumb_product,
+    });
+    return res.json({ error: 0, id: new_template.id });
+  },
+
+  async editModel(req, res) {
+    const {
+      model_id,
+
+      dim_x,
+      dim_y,
+      dim_z,
+      name_product,
+      descriptopm_product,
+      thumb_product,
+    } = req.body;
+
+    const template = await Template.create({
+      id: model_id,
+      dim_x,
+      dim_y,
+      dim_z,
+      name_product,
+      descriptopm_product,
+      thumb_product,
+    });
+    return res.json({ error: 0, id: template.id });
+  },
+
+  async delete(req, res) {
+    const { model_id } = req.body;
+
+    const template = await Template.findOne({
+      id: model_id,
+    });
+    template.destroy();
+
+    return res.json({ error: 0 });
   },
 };
