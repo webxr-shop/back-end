@@ -41,36 +41,58 @@ module.exports = {
   },
   async profile(req, res) {
     const { token } = req.body;
-    const client = await Client.findOne({
-      where: {
-        id: {
-          [md5(id)]: token,
-        },
-      },
-    });
-    if (client) {
-      return res.json({ error: 0, client });
+    const clients = await Client.findAll({});
+
+    for (let i = 0; i < clients.length; i++) {
+      if (md5(clients[i].id) == token) {
+        return res.json({ error: 0, client: clients[i] });
+      }
     }
+
     return res.json({ error: 'Usuario não encontrado' });
   },
 
   async editProfile(req, res) {
     const { token, name, last_name, email, password } = req.body;
-    const client = await Client.findOne({
-      where: {
-        id: {
-          [md5(id)]: token,
-        },
-      },
+    const clients = await Client.findAll({
+      attributes: ['id', 'password'],
     });
-    if (client) {
-      await Client.create({
-        id: client.id,
-        name,
-        last_name,
-        email,
-        password: md5(password),
-      });
+
+    var client_id = 0;
+    var pass = '';
+
+    for (let i = 0; i < clients.length; i++) {
+      if (md5(clients[i].id) == token) {
+        client_id = clients[i].id;
+        pass = clients[i].password;
+      }
+    }
+
+    if (client_id != 0) {
+      if (password == '' || password == null) {
+        await Client.update(
+          {
+            name,
+            last_name,
+            email,
+            password: pass,
+          },
+          { where: { id: client_id } }
+        );
+        return res.json({
+          error: 0,
+        });
+      }
+
+      await Client.update(
+        {
+          name,
+          last_name,
+          email,
+          password: md5(password),
+        },
+        { where: { id: client_id } }
+      );
       return res.json({
         error: 0,
       });

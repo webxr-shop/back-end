@@ -57,10 +57,22 @@ module.exports = {
   },
 
   async list_model(req, res) {
-    const { client_id, category_id } = req.body;
+    const { token, category_id } = req.body;
+
+    const clients = await Client.findAll({
+      attributes: ['id'],
+    });
+    var client_id = 0;
+
+    for (let i = 0; i < clients.length; i++) {
+      if (md5(clients[i].id) == token) {
+        client_id = clients[i].id;
+      }
+    }
+    console.log(client_id);
+    console.log(category_id);
 
     const _templates = await Template.findAll({
-      attributes: ['id'],
       where: { client_id, category_id },
     });
 
@@ -74,6 +86,7 @@ module.exports = {
     const { model_id } = req.body;
 
     const _template = await Template.findOne({
+      attributes: ['category_id', 'dim_x', 'dim_y', 'dim_z', 'name_model'],
       where: { id: model_id },
     });
 
@@ -91,9 +104,22 @@ module.exports = {
       dim_y,
       dim_z,
       name_product,
-      descriptopm_product,
+      description_product,
       thumb_product,
+      category_id,
+      token,
     } = req.body;
+
+    const clients = await Client.findAll({
+      attributes: ['id'],
+    });
+    var client_id = 0;
+
+    for (let i = 0; i < clients.length; i++) {
+      if (md5(clients[i].id) == token) {
+        client_id = clients[i].id;
+      }
+    }
 
     const new_template = await Template.create({
       name_model,
@@ -102,33 +128,31 @@ module.exports = {
       dim_y,
       dim_z,
       name_product,
-      descriptopm_product,
+      description_product,
       thumb_product,
+      category_id,
+      client_id,
+      link: '',
     });
+    console.log('new_template');
+    console.log(new_template);
     return res.json({ error: 0, id: new_template.id });
   },
 
   async editModel(req, res) {
-    const {
-      model_id,
+    const { model_id, name_model, dim_x, dim_y, dim_z } = req.body;
 
-      dim_x,
-      dim_y,
-      dim_z,
-      name_product,
-      descriptopm_product,
-      thumb_product,
-    } = req.body;
-
-    const template = await Template.create({
-      id: model_id,
-      dim_x,
-      dim_y,
-      dim_z,
-      name_product,
-      descriptopm_product,
-      thumb_product,
-    });
+    const template = await Template.update(
+      {
+        name_model,
+        file_model,
+        dim_x,
+        dim_y,
+        dim_z,
+        link: '',
+      },
+      { where: { id: model_id } }
+    );
     return res.json({ error: 0, id: template.id });
   },
 
