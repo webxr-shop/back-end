@@ -13,6 +13,7 @@ class Template extends Model {
         name_product: DataTypes.STRING,
         description_product: DataTypes.STRING,
         thumb_product: DataTypes.STRING,
+        token: DataTypes.STRING,
       },
       {
         sequelize,

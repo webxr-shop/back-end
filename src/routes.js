@@ -22,9 +22,11 @@ routes.post('/category/name', ModelController.list_categories);
 routes.post('/home', HomeController.list);
 
 routes.post('/models', ModelController.list_model);
+routes.post('/models/recent', ModelController.list_model_recent);
 routes.post('/models/create', ModelController.createModel);
 routes.post('/models/editing', ModelController.editModel);
 routes.post('/models/get', ModelController.getModel);
+routes.post('/models/edit', ModelController.getModelEdit);
 routes.post('/models/delete', ModelController.delete);
 
 module.exports = routes;

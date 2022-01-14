@@ -32,6 +32,7 @@ module.exports = {
     });
     if (exist) {
       if (exist.password == md5(password)) {
+        console.log(md5(exist.id));
         return res.json({ error: 0, token: md5(exist.id) });
       } else {
         return res.json({ error: 'Senha incompatível' });
