@@ -6,7 +6,6 @@ class Category extends Model {
       {
         name: DataTypes.STRING,
         description: DataTypes.STRING,
-        thumb: DataTypes.TEXT,
       },
       {
         sequelize,
