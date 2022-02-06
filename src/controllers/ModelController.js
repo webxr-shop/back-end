@@ -144,17 +144,16 @@ module.exports = {
   async createModel(req, res) {
     const {
       name_model,
-      file_model,
       dim_x,
       dim_y,
       dim_z,
       price,
       description_model,
-      thumb_model,
       category_id,
       token,
     } = req.body;
 
+    console.log('Request Create');
     console.log(req.body);
 
     const clients = await Client.findAll({
@@ -168,48 +167,32 @@ module.exports = {
         client_id = clients[i].id;
       }
     }
-    console.log(client_id);
+
+    const { location: url = null } = req.file;
 
     const new_template = await Template.create({
       name_model,
-      file_model,
+      file_model: url,
       dim_x,
       dim_y,
       dim_z,
       price,
       description_model,
-      thumb_model,
+      thumb_model: '',
       category_id,
       client_id,
-      link: 'a',
-      token: 'a',
+      link: '',
+      token: '',
     });
-
     await Template.update(
       {
         token: md5(new_template.id),
       },
       { where: { id: new_template.id } }
     );
-    // let files = file_model.split('\\');
-    // let file = '';
-    // for (let i = 0; i < files.length; i++) {
-    //   if (i == files.length - 1) {
-    //     file = file + files[i];
-    //   } else {
-    //     file = file + files[i] + '/';
-    //   }
-    // }
-    // console.log(file);
-
-    // fs.renameSync(
-    //   'C:/Users/Thiago/Desktop/workspace/TCC/plataforma-webxr/assets/models/chair1.glb',
-    //   'C:/Users/Thiago/Documents/artest/teste.glb'
-    // );
-    // fs.writeFileSync('C:/Users/Thiago/Documents/artest/teste.glb', file_model);
 
     return res.json({
-      error: 1,
+      error: 0,
       id: new_template.id,
       category_id,
     });
@@ -240,6 +223,21 @@ module.exports = {
       { where: { id: model_id } }
     );
     return res.json({ error: 0, id: template.id });
+  },
+
+  async confirm(req, res) {
+    const { id, link, thumb_model, category_id } = req.body;
+    console.log('Request Confirm');
+    console.log(req.body);
+
+    await Template.update(
+      {
+        thumb_model,
+        link,
+      },
+      { where: { id } }
+    );
+    return res.json({ error: 0, category_id });
   },
 
   async delete(req, res) {

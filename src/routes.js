@@ -1,9 +1,14 @@
 const express = require('express');
+const multer = require('multer');
+
 const AuthController = require('./controllers/AuthController');
 const CategoryController = require('./controllers/CategoryController');
 const HomeController = require('./controllers/HomeController');
 const ShopController = require('./controllers/ShopController');
 const ModelController = require('./controllers/ModelController');
+const MediaController = require('./controllers/MediaController');
+
+const multerConfig = require('./config/multer');
 
 const routes = express.Router();
 
@@ -24,7 +29,7 @@ routes.post('/home', HomeController.list);
 
 routes.post('/models', ModelController.list_model);
 routes.post('/models/recent', ModelController.list_model_recent);
-routes.post('/models/create', ModelController.createModel);
+routes.post('/models/confirmation', ModelController.confirm);
 routes.post('/models/editing', ModelController.editModel);
 routes.post('/models/get', ModelController.getModel);
 routes.post('/models/edit', ModelController.getModelEdit);
@@ -32,5 +37,11 @@ routes.post('/models/delete', ModelController.delete);
 
 routes.post('/shop', ShopController.list);
 routes.post('/shop/model', ShopController.getModel);
+
+routes.post(
+  '/media/create',
+  multer(multerConfig).single('file'),
+  ModelController.createModel
+);
 
 module.exports = routes;
