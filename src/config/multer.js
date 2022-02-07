@@ -58,7 +58,6 @@ module.exports = {
     ];
 
     if (allowedMimes.includes(file.mimetype)) {
-      console.log(file);
       cb(null, true);
     } else {
       cb(new Error('Invalid file type.'));

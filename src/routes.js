@@ -30,13 +30,23 @@ routes.post('/home', HomeController.list);
 routes.post('/models', ModelController.list_model);
 routes.post('/models/recent', ModelController.list_model_recent);
 routes.post('/models/confirmation', ModelController.confirm);
-routes.post('/models/editing', ModelController.editModel);
-routes.post('/models/get', ModelController.getModel);
+
+routes.post('/models/get', ModelController.getModels);
+routes.post('/models/viewer', ModelController.getModel);
+
 routes.post('/models/edit', ModelController.getModelEdit);
 routes.post('/models/delete', ModelController.delete);
 
 routes.post('/shop', ShopController.list);
 routes.post('/shop/model', ShopController.getModel);
+
+routes.post(
+  '/model/edit',
+  multer(multerConfig).single('file'),
+  ModelController.editModel
+);
+
+routes.post('/model/edit/nofile', ModelController.editNoFile);
 
 routes.post(
   '/media/create',

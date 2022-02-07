@@ -19,7 +19,7 @@ module.exports = {
 
   async getModel(req, res) {
     const { token } = req.body;
-    const _templates = await Template.findOne({
+    const model = await Template.findOne({
       where: { token },
       attributes: [
         'id',
@@ -27,7 +27,6 @@ module.exports = {
         'dim_x',
         'dim_y',
         'dim_z',
-        'link',
         'token',
         'description_model',
         'thumb_model',
@@ -37,7 +36,7 @@ module.exports = {
 
     return res.json({
       error: 0,
-      _templates,
+      model,
     });
   },
 };

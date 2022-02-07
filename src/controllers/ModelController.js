@@ -106,14 +106,34 @@ module.exports = {
   async getModel(req, res) {
     const { token } = req.body;
 
-    const _template = await Template.findOne({
-      attributes: ['file_model', 'link'],
+    const model = await Template.findOne({
+      attributes: ['link', 'file_model', 'token'],
       where: { token },
     });
 
     return res.json({
       error: 0,
-      _template,
+      model,
+    });
+  },
+
+  async getModels(req, res) {
+    const { token } = req.body;
+
+    const model = await Template.findOne({
+      attributes: ['category_id', 'file_model'],
+      where: { token },
+    });
+
+    const models = await Template.findAll({
+      attributes: ['file_model', 'name_model', 'price'],
+      where: { category_id: model.category_id },
+    });
+
+    return res.json({
+      error: 0,
+      model,
+      models,
     });
   },
 
@@ -154,7 +174,6 @@ module.exports = {
     } = req.body;
 
     console.log('Request Create');
-    console.log(req.body);
 
     const clients = await Client.findAll({
       attributes: ['id'],
@@ -190,46 +209,89 @@ module.exports = {
       },
       { where: { id: new_template.id } }
     );
+    const model = await Template.findOne({
+      attributes: ['token'],
+      where: { id: new_template.id },
+    });
 
     return res.json({
       error: 0,
       id: new_template.id,
+      token: model.token,
       category_id,
     });
   },
 
   async editModel(req, res) {
     const {
-      id,
+      model_token,
       name_model,
-      file_model,
       dim_x,
       dim_y,
       dim_z,
       price,
       description_model,
-      thumb_model,
+      category_id,
     } = req.body;
 
-    const template = await Template.update(
+    const { location: url = null } = req.file;
+
+    await Template.update(
       {
         name_model,
-        file_model,
+        file_model: url,
         dim_x,
         dim_y,
         dim_z,
-        link: '',
+        price,
+        description_model,
+        category_id,
       },
-      { where: { id: model_id } }
+      { where: { token: model_token } }
     );
-    return res.json({ error: 0, id: template.id });
+
+    return res.json({ error: 0, token: model_token });
+  },
+
+  async editNoFile(req, res) {
+    const {
+      model_token,
+      name_model,
+      dim_x,
+      dim_y,
+      dim_z,
+      price,
+      description_model,
+      category_id,
+    } = req.body;
+
+    await Template.update(
+      {
+        name_model,
+        dim_x,
+        dim_y,
+        dim_z,
+        price,
+        description_model,
+        category_id,
+      },
+      { where: { token: model_token } }
+    );
+    return res.json({ error: 0, token: model_token });
   },
 
   async confirm(req, res) {
-    const { id, link, thumb_model, category_id } = req.body;
-    console.log('Request Confirm');
-    console.log(req.body);
+    const { lvl, id, link, thumb_model, category_id, token } = req.body;
 
+    if (lvl == 1) {
+      await Template.update(
+        {
+          thumb_model,
+        },
+        { where: { token } }
+      );
+      return res.json({ error: 0, token, lvl });
+    }
     await Template.update(
       {
         thumb_model,
@@ -237,7 +299,7 @@ module.exports = {
       },
       { where: { id } }
     );
-    return res.json({ error: 0, category_id });
+    return res.json({ error: 0, category_id, lvl });
   },
 
   async delete(req, res) {
@@ -246,7 +308,6 @@ module.exports = {
     const template = await Template.findOne({
       where: { token },
     });
-    console.log(template);
 
     template.destroy();
 
