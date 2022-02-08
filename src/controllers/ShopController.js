@@ -9,6 +9,9 @@ module.exports = {
   async list(req, res) {
     const _templates = await Template.findAll({
       attributes: ['id', 'name_model', 'token', 'thumb_model', 'price'],
+      where: {
+        client_id: 19,
+      },
     });
 
     return res.json({

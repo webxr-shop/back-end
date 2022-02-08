@@ -42,6 +42,13 @@ module.exports = {
       }
     }
 
+    const category = await Category.findOne({
+      attributes: ['name'],
+      where: {
+        id: category_id,
+      },
+    });
+
     const _templates = await Template.findAll({
       where: { client_id, category_id },
       attributes: ['id', 'name_model', 'token'],
@@ -55,6 +62,7 @@ module.exports = {
 
     return res.json({
       error: 0,
+      category,
       _templates,
     });
   },

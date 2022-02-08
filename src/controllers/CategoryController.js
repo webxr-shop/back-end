@@ -9,6 +9,7 @@ module.exports = {
       attributes: ['id'],
       where: { name },
     });
+
     if (!exist) {
       const clients = await Client.findAll({});
       var client_id = 0;
@@ -18,6 +19,7 @@ module.exports = {
           client_id = clients[i].id;
         }
       }
+      console.log(client_id);
       await Category.create({
         name,
         description,
@@ -28,24 +30,6 @@ module.exports = {
     }
     return res.json({ error: 0 });
   },
-  // async list(req, res) {
-  //   const { token } = req.body;
-  //   const clients = await Client.findAll({});
-  //   var client_id = 0;
-
-  //   for (let i = 0; i < clients.length; i++) {
-  //     if (md5(clients[i].id) == token) {
-  //       client_id = clients[i].id;
-  //     }
-  //   }
-
-  //   var _categories = await Category.findAll({
-  //     attributes: ['id', 'name'],
-  //     where: { client_id },
-  //   });
-
-  //   return res.json(_categories);
-  // },
 
   async list(req, res) {
     const { token } = req.body;
