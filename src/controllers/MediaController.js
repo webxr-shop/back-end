@@ -7,11 +7,11 @@
 //     const { id: petId } = await Pet.findByPk(parseInt(req.params.pet_id));
 
 //     if (!petId) {
-//       return res.status(404).json({ error: 'Pet not found!' });
+//       return res.status(404).json({ 'Pet not found!' });
 //     }
 
 //     if (req.file === null || req.file === undefined) {
-//       return res.status(406).json({ Error: 'File not received!' });
+//       return res.status(406).json({ 'File not received!' });
 //     }
 
 //     const { originalname: name, size, key, location: url = null } = req.file;

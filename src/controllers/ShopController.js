@@ -7,39 +7,50 @@ const md5 = require('md5');
 
 module.exports = {
   async list(req, res) {
-    const _templates = await Template.findAll({
-      attributes: ['id', 'name_model', 'token', 'thumb_model', 'price'],
-      where: {
-        client_id: 19,
-      },
-    });
+    try {
+      const _templates = await Template.findAll({
+        attributes: ['id', 'name_model', 'token', 'thumb_model', 'price'],
+        where: {
+          client_id: 19,
+        },
+      });
 
-    return res.json({
-      error: 0,
-      _templates,
-    });
+      return res.json({
+        error: 0,
+        _templates,
+      });
+    } catch (error) {
+      console.log(error);
+      return res.status(500).json(error);
+    }
   },
 
   async getModel(req, res) {
     const { token } = req.body;
-    const model = await Template.findOne({
-      where: { token },
-      attributes: [
-        'id',
-        'name_model',
-        'dim_x',
-        'dim_y',
-        'dim_z',
-        'token',
-        'description_model',
-        'thumb_model',
-        'price',
-      ],
-    });
 
-    return res.json({
-      error: 0,
-      model,
-    });
+    try {
+      const model = await Template.findOne({
+        where: { token },
+        attributes: [
+          'id',
+          'name_model',
+          'dim_x',
+          'dim_y',
+          'dim_z',
+          'token',
+          'description_model',
+          'thumb_model',
+          'price',
+        ],
+      });
+
+      return res.json({
+        error: 0,
+        model,
+      });
+    } catch (error) {
+      console.log(error);
+      return res.status(500).json(error);
+    }
   },
 };
