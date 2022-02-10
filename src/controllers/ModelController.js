@@ -151,6 +151,12 @@ module.exports = {
     try {
       const model = await Template.findOne({
         attributes: ['category_id', 'file_model'],
+        include: [
+          {
+            attributes: ['name'],
+            association: 'category',
+          },
+        ],
         where: { token },
       });
       if (model) {
