@@ -1,7 +1,7 @@
 const Template = require('../models/Template');
 const Client = require('../models/Client');
 const Category = require('../models/Category');
-const fs = require('fs');
+const AWS = require('aws-sdk');
 
 const md5 = require('md5');
 
@@ -289,6 +289,22 @@ module.exports = {
     try {
       const { location: url = null } = req.file;
 
+      const template = await Template.findOne({
+        attributes: ['file_model'],
+        where: { token: model_token },
+      });
+      console.log(template);
+      let vectorStrings = template.file_model.split('/');
+      let key = vectorStrings[vectorStrings.length - 1];
+      let s3 = new AWS.S3();
+      let params = { Bucket: 'plataforma-webxr', Key: key };
+
+      s3.deleteObject(params, function (err, data) {
+        if (err) console.log(err, err.stack);
+        // error
+        else console.log(); // deleted
+      });
+
       await Template.update(
         {
           name_model,
@@ -374,6 +390,17 @@ module.exports = {
     try {
       const template = await Template.findOne({
         where: { token },
+      });
+      let vectorStrings = template.file_model.split('/');
+      let key = vectorStrings[vectorStrings.length - 1];
+
+      let s3 = new AWS.S3();
+      let params = { Bucket: 'plataforma-webxr', Key: key };
+
+      s3.deleteObject(params, function (err, data) {
+        if (err) console.log(err, err.stack);
+        // error
+        else console.log(); // deleted
       });
 
       template.destroy();
