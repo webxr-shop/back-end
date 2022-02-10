@@ -11,7 +11,7 @@ module.exports = {
       const _templates = await Template.findAll({
         attributes: ['id', 'name_model', 'token', 'thumb_model', 'price'],
         where: {
-          client_id: 19,
+          client_id: 2,
         },
       });
 
