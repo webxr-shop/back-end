@@ -94,6 +94,8 @@ module.exports = {
 
       const _templates = await Template.findAll({
         attributes: ['id', 'name_model', 'token'],
+        limit: 10,
+        order: [['id', 'DESC']],
         include: [
           {
             attributes: ['name'],
@@ -101,8 +103,7 @@ module.exports = {
           },
         ],
         where: { client_id },
-        limit: 10,
-        order: 'DESC',
+        // limit: 10,
       });
 
       let _categories = await Category.findAll({
