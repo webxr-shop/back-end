@@ -101,6 +101,8 @@ module.exports = {
           },
         ],
         where: { client_id },
+        limit: 10,
+        order: 'DESC',
       });
 
       let _categories = await Category.findAll({
@@ -147,6 +149,7 @@ module.exports = {
 
   async getModels(req, res) {
     const { token } = req.body;
+    console.log('Entrou');
 
     try {
       const model = await Template.findOne({
